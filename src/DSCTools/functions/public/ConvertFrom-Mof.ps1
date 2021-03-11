@@ -7,7 +7,7 @@ function ConvertFrom-Mof {
 .PARAMETER Path
     The path of the MOF file to parse.
 .EXAMPLE
-   Get-ChildItem "C:\DSCConfigs\Output" -File -Filter "*.mof" -Recurse | ConvertFrom-DscMof
+   Get-ChildItem -Path "C:\DSCConfigs\Output" -File -Filter "*.mof" -Recurse | ConvertFrom-DscMof
 #>
     [CmdletBinding()]
     Param
