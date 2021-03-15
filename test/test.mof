@@ -1,0 +1,45 @@
+/*
+@TargetNode='localhost'
+@GeneratedBy=mkletz
+@GenerationDate=03/15/2021 15:13:07
+@GenerationHost=TECH-P10R59313
+*/
+
+instance of MSFT_UserResource as $MSFT_UserResource1ref
+{
+UserName = "pesterUser";
+ ResourceID = "[User]New User";
+ SourceInfo = "::5::9::User";
+ ModuleVersion = "2.12.0.0";
+ Description = "pester test user";
+ ModuleName = "PSDscResources";
+ ConfigurationName = "Example";
+};
+instance of MSFT_GroupResource as $MSFT_GroupResource1ref
+{
+ResourceID = "[Group]New Group";
+ SourceInfo = "::10::9::Group";
+ GroupName = "pesterGroup";
+ ModuleVersion = "2.12.0.0";
+ Description = "pester test group";
+ ModuleName = "PSDscResources";
+ ConfigurationName = "Example";
+};
+instance of OMI_ConfigurationDocument
+
+                    {
+ Version="2.0.0";
+
+                        MinimumCompatibleVersion = "1.0.0";
+
+                        CompatibleVersionAdditionalProperties= {"Omi_BaseResource:ConfigurationName"};
+
+                        Author="mkletz";
+
+                        GenerationDate="03/15/2021 15:13:07";
+
+                        GenerationHost="TECH-P10R59313";
+
+                        Name="Example";
+
+                    };
