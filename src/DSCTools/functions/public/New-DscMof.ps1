@@ -1,4 +1,4 @@
-function New-CompositeResourceDscMof {
+function New-DscMof {
 <#
 .SYNOPSIS
     Generates a MOF file for a specified composite resource with the provided parameters.
