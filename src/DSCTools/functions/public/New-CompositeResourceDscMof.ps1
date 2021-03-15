@@ -27,6 +27,7 @@ function New-CompositeResourceDscMof {
     )
 
     Process {
+        # Parameters are passed in as configuration data to perserve data types
         [string[]]$ResourceParameters = @()
         ($Parameters.Keys) | ForEach-Object -Process {
             $ResourceParameters += "$($_) = $('$Node').$($_)"
