@@ -1,13 +1,13 @@
 function ConvertFrom-Mof {
 <#
 .SYNOPSIS
-   Parses a MOF file and converts the resource instances it contains to PowerShell Objects.
+    Parses a MOF file and converts the resource instances it contains to PowerShell Objects.
 .DESCRIPTION
-   Parses a MOF file and converts the resource instances it contains to PowerShell Objects.
+    Parses a MOF file and converts the resource instances it contains to PowerShell Objects.
 .PARAMETER Path
     The path of the MOF file to parse.
 .EXAMPLE
-   Get-ChildItem -Path "C:\DSCConfigs\Output" -File -Filter "*.mof" -Recurse | ConvertFrom-DscMof
+    Get-ChildItem -Path "C:\DSCConfigs\Output" -File -Filter "*.mof" -Recurse | ConvertFrom-DscMof
 #>
     [CmdletBinding()]
     Param
