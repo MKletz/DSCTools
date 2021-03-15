@@ -12,7 +12,7 @@ function ConvertFrom-Mof {
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory,ValueFromPipeline)]
         [ValidateScript({Test-Path -Path $_ -PathType Leaf -Include "*.mof"})]
         [Alias('FullName')]
         [string]$Path
@@ -41,17 +41,19 @@ function ConvertFrom-Mof {
         $Resources = $Resources -replace "(?m)$\s*\}[\r\n]+","`n"
 
         # Removing the empty last item and the ConfigurationDocument instance from the collection
-        $ResourceHashTables = ($Resources -Split '(?m)^\s*$') | Select-Object -SkipLast 1 | ForEach-Object -Process {
+
+        [System.Collections.ArrayList]$ResourceHashTables = @()
+        ($Resources -Split '(?m)^\s*$') | Select-Object -SkipLast 1 | ForEach-Object -Process {
             $ResourceHashTable = $_ | ConvertFrom-StringData
             Foreach ($Key in $($ResourceHashTable.Keys)) {
                 $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('}')
                 $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('"')
             }
             $ResourceHashTable['ResourceName'] = ($ResourceHashTable['SourceInfo'] -split '::')[-1]
-            $ResourceHashTable
+            $ResourceHashTables += $ResourceHashTable
         }
 
-        Return ,$ResourceHashTables
+        Return $ResourceHashTables
     }
 
     End {
