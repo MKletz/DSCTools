@@ -19,25 +19,25 @@ function New-DscMof {
     Param
     (
         [Parameter(Mandatory)]
-        [string]$Module,
+        [Microsoft.PowerShell.Commands.ModuleSpecification]$ModuleName,
         [string]$OutPath = $ENV:TEMP,
-        [Hashtable]$Parameters = @{},
+        [Hashtable]$Property = @{},
         [Parameter(Mandatory)]   
         [string]$Resource
     )
 
     Process {
-        # Parameters are passed in as configuration data to perserve data types
+        # Properties are passed in as configuration data to perserve data types
         [string[]]$ResourceParameters = @()
-        ($Parameters.Keys) | ForEach-Object -Process {
+        ($Property.Keys) | ForEach-Object -Process {
             $ResourceParameters += "$($_) = $('$Node').$($_)"
         }
         
-        $Parameters.NodeName = 'temp'
+        $Property.NodeName = 'temp'
 
         $ConfigurationData = @{
             'AllNodes' = @(
-                $Parameters
+                $Property
             )
         }
         
@@ -57,7 +57,7 @@ function New-DscMof {
             }}
             {0} -ConfigurationData $ConfigurationData -OutputPath $OutPath'
         
-        $ScriptBlock = $Template -f $UniqueConfigName,$Module,$Resource,($ResourceParameters -join "`n")
+        $ScriptBlock = $Template -f $UniqueConfigName,$ModuleName.Name,$Resource,($ResourceParameters -join "`n")
         
         Invoke-Command -ScriptBlock ([scriptblock]::Create($ScriptBlock)) -ArgumentList $ConfigurationData,$OutPath
     }

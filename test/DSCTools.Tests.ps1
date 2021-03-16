@@ -27,7 +27,7 @@ Describe 'ConvertFrom-Mof' {
 
 Describe 'New-DscMof' {
     It 'Does not throw' {
-        { New-DscMof -Module 'PSDscResources' -Resource 'User' -Parameters @{UserName='MyUser'; Description='MyDescription'} } | Should -Not -Throw
+        { New-DscMof -ModuleName 'PSDscResources' -Resource 'User' -Parameters @{UserName='MyUser'; Description='MyDescription'} } | Should -Not -Throw
     }
 
     It 'Produces a MOF file' {
