@@ -45,11 +45,16 @@ function ConvertFrom-Mof {
         [System.Collections.ArrayList]$ResourceHashTables = @()
         ($Resources -Split '(?m)^\s*$') | Select-Object -SkipLast 1 | ForEach-Object -Process {
             $ResourceHashTable = $_ | ConvertFrom-StringData
+            $ResourceHashTable['ResourceName'] = ($ResourceHashTable['SourceInfo'] -split '::')[-1]
+
             Foreach ($Key in $($ResourceHashTable.Keys)) {
+                if ($ResourceHashTable[$Key] -like "*,*"){
+                    $ResourceHashTable[$Key] = $ResourceHashTable[$Key] -split ','
+                }
                 $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('}')
                 $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('"')
             }
-            $ResourceHashTable['ResourceName'] = ($ResourceHashTable['SourceInfo'] -split '::')[-1]
+
             $ResourceHashTables += $ResourceHashTable
         }
 
