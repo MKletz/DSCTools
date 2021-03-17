@@ -26,7 +26,7 @@ function Get-DscResourceFromCache {
 
     Process {
         [string]$Key = "$($Module):$($Resource)"
-        
+
         if ($script:ResourcePropertyCache.keys -notcontains $Key){
             Write-Debug -Message "$($Key) not found in resource cache."
             Import-Module -Name $Module
@@ -36,12 +36,12 @@ function Get-DscResourceFromCache {
                 if ($CleanPropertyType -eq 'bool'){
                     $CleanPropertyType = 'boolean'
                 }
-                
+
                 if($CleanPropertyType -notlike "system.*"){
                     $CleanPropertyType = "system.$($CleanPropertyType)"
                 }
 
-                $_ | Add-Member -Name TypeObject -Value ([type]::GetType($CleanPropertyType,$True,$True)) -MemberType NoteProperty -ErrorAction SilentlyContinue
+                $_ | Add-Member -Name TypeObject -Value ([type]::GetType($CleanPropertyType,$False,$True)) -MemberType NoteProperty
                 $Properties.Add($_.Name,$_)
             }
             $script:ResourcePropertyCache.add($Key,$Properties)

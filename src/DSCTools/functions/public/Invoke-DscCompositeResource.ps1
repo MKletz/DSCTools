@@ -37,10 +37,17 @@ function Invoke-DscCompositeResource {
             
             $MOF = New-DscMof -ModuleName $ModuleName -Resource $Name -Property $Property
             ConvertFrom-Mof -Path $MOF | ForEach-Object -Process {
+                # There is some oddities with MOF generation in PSDesiredStateConfiguration. For example Module v1.1 Registery resources will say it was v1.0 causing it not to be found here.
+                if($_['ModuleName'] -eq 'PSDesiredStateConfiguration') {
+                    $ModuleObj = 'PSDesiredStateConfiguration'
+                }
+                else{
+                    $ModuleObj = [Microsoft.PowerShell.Commands.ModuleSpecification]@{ModuleName=$_['ModuleName'];ModuleVersion=$_['ModuleVersion']}
+                }
+
                 $InvokeSplat = @{
                     Name = $_['ResourceName']
-                    #ModuleName = [Microsoft.PowerShell.Commands.ModuleSpecification]@{ModuleName=$_['ModuleName'];ModuleVersion=$_['ModuleVersion']}
-                    ModuleName = $_['ModuleName']
+                    ModuleName = $ModuleObj
                     Method = $Method
                     Property = $_
                 }
