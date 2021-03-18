@@ -1,20 +1,13 @@
-name: ScriptAnalyzer
-
-on: [pull_request]
+on: [push]
 
 jobs:
-  build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-
+  PSScriptAnalyzer_job:
+    runs-on: ubuntu-latest
+    name: PSScriptAnalyzer
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: Install-Module -Name 'PSScriptAnalyzer' -Force -SkipPublisherCheck
-      shell: pwsh
-    - name: ScriptAnalyzer
-      run: Invoke-ScriptAnalyzer -Path '.\src\' -Recurse -EnableExit
-      shell: pwsh
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: PSScriptAnalyzer
+      uses: techservicesillinois/SecOps-PowerShell-PSScriptAnalyzer@v1
+      with:
+        path: 'src'
