@@ -8,6 +8,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: PSScriptAnalyzer
-      uses: techservicesillinois/SecOps-PowerShell-PSScriptAnalyzer@v1
+      uses: techservicesillinois/SecOps-PowerShell-PSScriptAnalyzer
       with:
         path: 'src'
