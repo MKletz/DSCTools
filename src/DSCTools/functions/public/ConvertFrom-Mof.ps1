@@ -15,14 +15,16 @@ function ConvertFrom-Mof {
         [Parameter(Mandatory,ValueFromPipeline)]
         [ValidateScript({Test-Path -Path $_ -PathType Leaf -Include "*.mof"})]
         [Alias('FullName')]
-        [string]$Path
+        [String]$Path,
+        [Switch]$IncludeMetaData
     )
 
     Begin {
     }
 
     Process {
-        Return [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportInstances($Path, 4)
+        $Mof = [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportInstances($Path, 4) | Select-Object -SkipLast ([int]!($IncludeMetaData.IsPresent))
+        Return $Mof
     }
 
     End {
