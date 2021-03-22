@@ -4,5 +4,3 @@ Get-ChildItem -Path $FunctionPath -Filter "*.ps1" -Recurse | ForEach-Object -Pro
     Write-Verbose -Message "Importing $($_.BaseName)"
     . $_.FullName | Out-Null
 }
-
-[hashtable]$script:ResourcePropertyCache = @{}
