@@ -22,43 +22,7 @@ function ConvertFrom-Mof {
     }
 
     Process {
-        # Code here was taken then modified from: https://github.com/MathieuBuisson/Powershell-Utility/blob/master/ConvertFrom-DscMof/ConvertFrom-DscMof.psm1
-        
-        $FileContent = Get-Content -Path $Path
-
-        $LineWithFirstBrace = ($FileContent | Select-String -Pattern 'instance of ' | Where-Object -FilterScript { $_.Line -notmatch 'MSFT_Credential' })[0].LineNumber
-
-        # Removing the lines preceding the first resource instance
-        $Resources = $FileContent | Select-Object -Skip $LineWithFirstBrace | Where-Object -FilterScript { $_ -notmatch "^\s*$" }
-
-        # Reformatting multi-value properties to allow ConvertFrom-StringData to process them
-        $Resources = $Resources -replace ";",''
-        $Resources = $resources -join "`n"
-        $Resources = $Resources -replace '(?m)\{[\r\n]+\s*',''
-        $Resources = $Resources -replace 'instance of \w+.*',''
-        $Resources = $Resources -replace '(?m)\,[\r\n]+\s*',','
-        $Resources = $Resources -replace "(?m)\}[\r\n]+^\s*$",''
-        $Resources = $Resources -replace "(?m)$\s*\}[\r\n]+","`n"
-
-        # Removing the empty last item and the ConfigurationDocument instance from the collection
-
-        [System.Collections.ArrayList]$ResourceHashTables = @()
-        ($Resources -Split '(?m)^\s*$') | Select-Object -SkipLast 1 | ForEach-Object -Process {
-            $ResourceHashTable = $_ | ConvertFrom-StringData
-            $ResourceHashTable['ResourceName'] = ($ResourceHashTable['SourceInfo'] -split '::')[-1]
-
-            Foreach ($Key in $($ResourceHashTable.Keys)) {
-                if ($ResourceHashTable[$Key] -like "*,*"){
-                    $ResourceHashTable[$Key] = $ResourceHashTable[$Key] -split ','
-                }
-                $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('}')
-                $ResourceHashTable[$Key] = ($ResourceHashTable[$Key]).Trim('"')
-            }
-
-            $ResourceHashTables += $ResourceHashTable
-        }
-
-        Return $ResourceHashTables
+        Return [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportInstances($Path, 4)
     }
 
     End {

@@ -27,36 +27,38 @@ function Invoke-DscCompositeResource {
 
         Process {
             [String[]]$ExtraProperties = @(
-                'ResourceName',
-                'ModuleVersion',
+                'SourceInfo',  
                 'ConfigurationName',
+                'CimSystemProperties',
+                'CimInstanceProperties',
                 'ResourceID',
-                'ModuleName',
-                'SourceInfo'
+                'ModuleVersion',
+                'CimClass',
+                'PSComputerName',
+                'ModuleName'
             )
             
             $MOF = New-DscMof -ModuleName $ModuleName -Resource $Name -Property $Property
-            ConvertFrom-Mof -Path $MOF | ForEach-Object -Process {
+            # The last object is always the Omi_BaseResource:ConfigurationName that isn't needed
+            ConvertFrom-Mof -Path $MOF | Select-Object -SkipLast 1 | ForEach-Object -Process {
                 # There is some oddities with MOF generation in PSDesiredStateConfiguration. For example Module v1.1 Registery resources will say it was v1.0 causing it not to be found here.
-                if($_['ModuleName'] -eq 'PSDesiredStateConfiguration') {
+                if($_.ModuleName -eq 'PSDesiredStateConfiguration') {
                     $ModuleObj = 'PSDesiredStateConfiguration'
                 }
                 else{
-                    $ModuleObj = [Microsoft.PowerShell.Commands.ModuleSpecification]@{ModuleName=$_['ModuleName'];ModuleVersion=$_['ModuleVersion']}
+                    $ModuleObj = [Microsoft.PowerShell.Commands.ModuleSpecification]@{ModuleName=$_.ModuleName;ModuleVersion=$_.ModuleVersion}
+                }
+
+                $Properties = @{}
+                $_.psobject.properties | ForEach-Object -Process {
+                    $Properties[$_.Name] = $_.Value
                 }
 
                 $InvokeSplat = @{
-                    Name = $_['ResourceName']
+                    Name = ($_.SourceInfo -split '::')[-1]
                     ModuleName = $ModuleObj
                     Method = $Method
-                    Property = $_
-                }
-
-                $ResourceProperties = (Get-DscResourceFromCache -Resource $_['ResourceName'] -Module $_['ModuleName'])
-                Foreach ($Key in $($InvokeSplat['Property'].Keys)) {
-                    if ($ResourceProperties.keys -contains $Key) {
-                        $InvokeSplat['Property'][$Key] = ($InvokeSplat['Property'][$Key] -as $ResourceProperties[$Key].TypeObject)
-                    }
+                    Property = $Properties
                 }
 
                 $ExtraProperties | ForEach-Object -Process {
